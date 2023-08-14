@@ -2,6 +2,7 @@ import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import AppRoutes from '../../routes';
 
 describe('Componente App', () => {
   test('Deve permitir adicionar uma transacao em Extrato', () => {
@@ -19,5 +20,18 @@ describe('Componente App', () => {
     const itemExtrato = screen.getByRole('listitem');
 
     expect(novaTransacao).toContainElement(itemExtrato);
+  });
+
+  //teste de redirecionamento de rota
+  test('Deve navegar para a pagina correspondente ao link clicado', async () => {
+    render(<AppRoutes />, { wrapper: BrowserRouter });
+
+    const linkPaginaCartoes = screen.getByText('Cartões');
+    expect(linkPaginaCartoes).toBeInTheDocument();
+
+    userEvent.click(linkPaginaCartoes);
+
+    const tituloPaginaCartoes = await screen.findByText('Meus cartões');
+    expect(tituloPaginaCartoes).toBeInTheDocument();
   });
 });
