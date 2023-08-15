@@ -29,5 +29,6 @@ describe('Requisicoes para API', () => {
     const transacoes = await buscaTransacoes(mockTransacao);
 
     expect(transacoes).toEqual(mockTransacao);
+    expect(api.get).toHaveBeenCalledWith('/transacoes');
   });
 });
