@@ -1,4 +1,5 @@
 import api from './api';
+import { atualizaSaldo, buscaSaldo } from './saldo';
 import { buscaTransacoes } from './transacoes';
 
 jest.mock('./api');
@@ -12,6 +13,16 @@ const mockTransacao = [
     mes: 'Novembro',
   },
 ];
+
+const mockRequisicaoSaldo = (retorno) => {
+  return new Promise((res, req) => {
+    setTimeout(() => {
+      res({
+        data: { valor: retorno },
+      });
+    }, 200);
+  });
+};
 
 const mockRequisicao = (retorno) => {
   return new Promise((res, req) => {
@@ -47,4 +58,31 @@ describe('Requisicoes para API', () => {
     expect(transacoes).toEqual([]);
     expect(api.get).toHaveBeenCalledWith('/transacoes');
   });
+
+  test('Deve retornar o valor atual do saldo', async () => {
+    api.get.mockImplementation(() =>
+      mockRequisicaoSaldo(mockTransacao[0].valor)
+    );
+
+    const saldo = await buscaSaldo();
+
+    expect(saldo).toBe(mockTransacao[0].valor);
+    expect(api.get).toHaveBeenCalledWith('/saldo');
+  });
+
+  test('Deve retornar o valor de 1000 quando a requisicao falhar', async () => {
+    api.get.mockImplementation(() => mockRequisicaoErro());
+
+    const saldo = await buscaSaldo();
+
+    expect(saldo).toEqual(1000);
+    expect(api.get).toHaveBeenCalledWith('/saldo');
+  });
 });
+
+/*
+beforeAll(() => {}); // antes de todos os testes;
+beforeEach(() => {}); // antes de cada um dos testes
+afterAll(() => {}); // depois de finalizar todos os testes
+afterEachAll(() => {}); // depois de finalizar cada um dos testes
+*/
